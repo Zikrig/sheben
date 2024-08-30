@@ -26,7 +26,7 @@ async def print_message(message: types.Message, text: str, admin = False):
         await message.answer('Не можем найти такого поста')
         return True 
 
-    keyb = make_row_keyboard(post['keyboard']) if 'keyboard' in post else None
+    keyb = make_row_keyboard(post['keyboard']) if 'keyboard' in post else make_row_keyboard([])
     await answer_by_something(message, post, keyb, admin)
     
 
@@ -38,9 +38,9 @@ async def print_message_to_alt_by_id(message: types.Message, id: str):
     
     # keyb = make_row_keyboard(post['keyboard']) if 'keyboard' in post else None
     if post['typeof'] =='hard':
-        keyb = make_row_keyboard(['✏Описание', '✏Фото/файл', '✏Локация', '❌'])
+        keyb = make_row_keyboard(['✏Описание', '✏Фото/файл', '✏Локация', 'Переименовать', 'Удалить пост', '❌'])
     else:
-        keyb = make_row_keyboard(['✏Описание', '❌'])
+        keyb = make_row_keyboard(['✏Описание', 'Удалить пост', 'Переименовать', '❌'])
     
     # print(post)
     await answer_by_something(message, post, keyb)

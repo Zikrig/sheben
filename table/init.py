@@ -16,6 +16,9 @@ def alt_geo_by_post(mysqldata, id, geo):
 def alt_descr_by_post(mysqldata, id, descr):
     return send_some(mysqldata, f"UPDATE Posts set TextOf = '{descr}' WHERE (Id) = ({id})")
 
+def alt_name_by_post(mysqldata, id, name):
+    return send_some(mysqldata, f"UPDATE Posts set Name = '{name}' WHERE (Id) = ({id})")
+
 def get_all_posts(mysqldata):
     return select_all(mysqldata, "SELECT * FROM Posts")
 
@@ -23,6 +26,7 @@ def del_posts(mysqldata):
     return send_some(mysqldata, "DROP TABLE Posts;")
 
 def del_post_by(mysqldata, bywhat, ar):
+    # print(f"Удаляем {str(ar)}")
     if bywhat == 'id':
         return send_some(mysqldata, f"DELETE FROM Posts WHERE Id={str(ar)}")
     else:

@@ -1,6 +1,6 @@
 from table.init import *
 from config_base import picdir
-from os import remove
+from os import remove, path
 
 
     
@@ -59,8 +59,12 @@ class Tabler:
             self.posts[name] = p_to_add
 
             self.posts_by_ids[str(id)] = p_to_add
+        
+        for post in self.posts:
+            p = self.posts[post]
+            self.posts_by_ids[str(p['id'])] = p
 
-        self.get_keyb()      
+        self.get_keyb()    
 
     def get_keyb(self):
         self.keyb = {}
@@ -84,11 +88,15 @@ class Tabler:
                 #     self.set_keyboard_of_post(post, self.keyb[post])
                 # else:
                 self.set_keyboard_of_post(post, self.keyb[post])
+                self.posts[post]['is_parent'] = True
             # print(post)
             # print(post['father'])
             elif self.posts[post]['father'] in self.keyb:
                 father = self.posts[post]['father']
                 self.set_keyboard_of_post(post, self.keyb[father])
+                self.posts[post]['is_parent'] = False
+            
+            self.posts_by_ids[str(self.posts[post]['id'])] = self.posts[post]
     
     def set_keyboard_of_post(self, name, keyboard):
         self.posts[name]['keyboard'] = keyboard
@@ -129,15 +137,21 @@ class Tabler:
     
     def del_image(self, id):
         try:
+            id = str(id)
+            if not 'image' in self.posts_by_ids[id] or self.posts_by_ids[id]['image'] == '':
+                return True
             # print(f'К удалению: '+ self.posts_by_ids[id]['image'])
-            remove(picdir + self.posts_by_ids[id]['image'])
+            if path.exists(picdir + self.posts_by_ids[id]['image']):
+                remove(picdir + self.posts_by_ids[id]['image'])
         except Exception as e:
-            print('Ошибка ' + e)
+            print('Ошибка ' + str(e))
         finally:
             alt_image_by_post(self.mysqldata, id, '')
             self.init_table_post()
 
     def set_geo(self, id, geo):
+        if not 'geo' in self.posts_by_ids[str(id)]:
+            return True
         alt_geo_by_post(self.mysqldata, id, geo)
         self.init_table_post()
     
@@ -145,14 +159,31 @@ class Tabler:
         alt_geo_by_post(self.mysqldata, id, '')
         self.init_table_post()
 
-    def set_descr(self, name, descr):
-        alt_descr_by_post(self.mysqldata, name, descr)
+    def set_descr(self, id, descr):
+        alt_descr_by_post(self.mysqldata, id, descr)
+        self.init_table_post()
+
+    def set_name(self, id, newname):
+        alt_name_by_post(self.mysqldata, id, newname)
         self.init_table_post()
 
     def del_post_by_id(self, id):
+        id = str(id)
+        if not id in self.posts_by_ids:
+            return True
+        if self.posts_by_ids[id]['name'] == '❌':
+            return True
+        
+        if self.posts_by_ids[id]['is_parent']:
+            for name in self.posts_by_ids[id]['keyboard']:
+                # print('Пытаемся удалить дочерний ' + name)
+                self.del_post_by_name(name)
+        
+        self.del_geo(id)
+        self.del_image(id)
         del_post_by(self.mysqldata, 'id', id)
         self.init_table_post()
 
     def del_post_by_name(self, name):
-        del_post_by(self.mysqldata, 'name', name)
-        self.init_table_post()
+        id = self.posts[name]['id']
+        self.del_post_by_id(id)

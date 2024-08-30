@@ -43,7 +43,27 @@ async def altpost(message: types.Message, state: FSMContext):
             reply_markup=make_row_keyboard(['Удалить', '❌'])
         )
 
-@router.message(StateFilter(St.AltPhoto, St.AltDescribe, St.AltGeo), F.text == '❌')
+    elif to_change == 'Удалить пост':
+        # await state.set_state(None)
+        await message.answer(
+            text = 'Пост удален'
+            # reply_markup=make_row_keyboard(['Удалить', '❌'])
+        )
+        father = tb.get_post_by_id(post_id)['father']
+        
+        tb.del_post_by_id(post_id)
+        
+        await state.set_state(None)
+        await print_message(message, father, True)
+
+    elif to_change == 'Переименовать':
+        await state.set_state(St.AltName)
+        await message.answer(
+            text = 'Введите новое имя для этого поста',
+            reply_markup=make_row_keyboard(['❌'])
+        )
+
+@router.message(StateFilter(St.AltPhoto, St.AltDescribe, St.AltGeo, St.AltName), F.text == '❌')
 async def downtomenu(message: types.Message, state: FSMContext):
     # await altpost(message, state)
     data = await state.get_data()
@@ -85,6 +105,21 @@ async def alt_describe(message: types.Message, state: FSMContext):
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
 
+@router.message(StateFilter(St.AltName))
+async def alt_name(message: types.Message, state: FSMContext):
+    # await altpost(message, state)
+    data = await state.get_data()
+    post_id = str(data['post_id'])
+    new_descr = message.text
+    if len(new_descr) > 50:
+        await message.answer('Имя слишком длинное! Оно не может быть больше 50 знаков')
+    else:
+        tb.set_name(post_id, new_descr.replace('\'', '"'))
+        await message.answer('Успешно поменяли имя')
+        
+        await print_message_to_alt_by_id(message, post_id)
+        await state.set_state(St.AltMain)
+
 @router.message(StateFilter(St.AltPhoto))
 async def alt_photo(message: types.Message, state: FSMContext):
     data = await state.get_data()
@@ -105,13 +140,13 @@ async def alt_photo(message: types.Message, state: FSMContext):
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
         await message.answer(
-            text = f'Видео успешно изменено.',
+            text = f'Видео успешно изменено',
         )
 
     elif(message.photo != '' or message.photo != None):
         await load_photo(message, post_id)
         await message.answer(
-            text = f'Фото успешно изменено.',
+            text = f'Фото успешно изменено',
         )
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)

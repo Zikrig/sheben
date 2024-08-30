@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 def make_dobler_from_list(a:list):
     res = []
@@ -16,10 +16,14 @@ def make_dobler_from_list(a:list):
     return res
 
 def make_row_keyboard(items: list[str]) -> ReplyKeyboardMarkup:
+    if len(items) == 0:
+        return ReplyKeyboardRemove()
     row = make_dobler_from_list([KeyboardButton(text=item) for item in items])
     return ReplyKeyboardMarkup(keyboard=row, resize_keyboard=True)
 
 def make_row_keyboard_simple(items: list[str]) -> ReplyKeyboardMarkup:
+    if len(items) == 0:
+        return ReplyKeyboardRemove()
     row = [KeyboardButton(text=item) for item in items]
     return ReplyKeyboardMarkup(keyboard=[row], resize_keyboard=True)
 

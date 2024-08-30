@@ -16,4 +16,5 @@ admins = [
 ]
 
 
+
 picdir = os.getcwd() + '/data/'

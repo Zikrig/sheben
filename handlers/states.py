@@ -8,3 +8,4 @@ class St(StatesGroup):
     AltDescribe = State()
     AltPhoto = State()
     AltGeo = State()
+    AltName = State()
