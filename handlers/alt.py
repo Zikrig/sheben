@@ -114,9 +114,10 @@ async def alt_name(message: types.Message, state: FSMContext):
     if len(new_descr) > 50:
         await message.answer('Имя слишком длинное! Оно не может быть больше 50 знаков')
     else:
-        tb.set_name(post_id, new_descr.replace('\'', '"'))
+        name_to_change = tb.posts_by_ids[post_id]['name']
+        tb.set_name(name_to_change, new_descr.replace('\'', '"'))
         await message.answer('Успешно поменяли имя')
-        
+        # print(*tb.posts.keys())
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
 
@@ -168,3 +169,9 @@ async def alt_geo(message: types.Message, state: FSMContext):
         
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
+
+
+# @router.message()
+# async def notwork(message: types.Message, state: FSMContext):
+#     await message.answer(str(await state.get_state()))
+#     await message.answer(str(tb.posts.keys()))
