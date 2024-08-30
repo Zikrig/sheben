@@ -143,7 +143,7 @@ async def alt_photo(message: types.Message, state: FSMContext):
             text = f'Видео успешно изменено',
         )
 
-    elif(message.photo != '' or message.photo != None):
+    elif(message.photo != '' and message.photo != None):
         await load_photo(message, post_id)
         await message.answer(
             text = f'Фото успешно изменено',
