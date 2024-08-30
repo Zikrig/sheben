@@ -18,6 +18,7 @@ class Tabler:
             return False
         finally:
             return (g1, g2)
+        
     def renew_base(self):
         del_posts(self.mysqldata)
         init_posts(self.mysqldata)
@@ -37,7 +38,7 @@ class Tabler:
                 'id': id,
                 'name': name,
                 'textof': textof,
-                'textalt': textof+ '\n/alt_' + str(id),
+                'textalt': textof + '\n/alt_' + str(id),
                 'father': father,
                 'typeof': typeof,
                 # 'image': image,
@@ -59,8 +60,7 @@ class Tabler:
 
             self.posts_by_ids[str(id)] = p_to_add
 
-        self.get_keyb()
-        
+        self.get_keyb()      
 
     def get_keyb(self):
         self.keyb = {}
@@ -131,8 +131,8 @@ class Tabler:
         try:
             # print(f'К удалению: '+ self.posts_by_ids[id]['image'])
             remove(picdir + self.posts_by_ids[id]['image'])
-        except Error as e:
-            print(e)
+        except Exception as e:
+            print('Ошибка ' + e)
         finally:
             alt_image_by_post(self.mysqldata, id, '')
             self.init_table_post()

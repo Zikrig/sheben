@@ -15,4 +15,5 @@ admins = [
     '1043157995'
 ]
 
-picdir = './data/'
+
+picdir = os.getcwd() + '/data/'

@@ -2,13 +2,14 @@ from aiogram import Router
 from aiogram import Bot, types, Dispatcher, F
 from aiogram.filters import StateFilter, Command, CommandObject, CommandStart
 from aiogram.types import FSInputFile
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 
 from handlers.states import St
 from config_base import picdir
 
-from bot_create import tb
+from bot_create import tb, load_file, load_video, load_photo
 
 from message.utils import *
 
@@ -29,10 +30,10 @@ async def altpost(message: types.Message, state: FSMContext):
             text = 'Введите новое описание для этого поста',
             reply_markup=make_row_keyboard(['❌'])
         )
-    elif to_change == '✏Фото':
+    elif to_change == '✏Фото/файл':
         await state.set_state(St.AltPhoto)
         await message.answer(
-            text = 'Приложите новое фото для поста',
+            text = 'Приложите новое фото или файл для поста',
             reply_markup=make_row_keyboard(['Удалить', '❌'])
         )
     elif to_change == '✏Локация':
@@ -88,24 +89,34 @@ async def alt_describe(message: types.Message, state: FSMContext):
 async def alt_photo(message: types.Message, state: FSMContext):
     data = await state.get_data()
     post_id = str(data['post_id'])
+    # print(message)
     
-    if(message.photo == '' or message.photo == None):
-        await message.answer('Не нашли фото. Пришлите фото')
-    else:
-        # user_id = message.from_user.id
-        photo_name = f"photo_{post_id}.jpg"
-        photo_path = f"{picdir}{photo_name}"
-        await message.bot.download(
-            message.photo[-1],
-            destination=photo_path
-        )
-        tb.set_image(post_id, photo_name)
+    if(message.document != '' and message.document != None):
+        await load_file(message, post_id)
         await message.answer(
-            text = f'Фото успешно изменено.',
+            text = f'Документ успешно изменен',
         )
 
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
+    elif(message.video != '' and message.video != None):
+        await load_video(message, post_id)
+
+        await print_message_to_alt_by_id(message, post_id)
+        await state.set_state(St.AltMain)
+        await message.answer(
+            text = f'Видео успешно изменено.',
+        )
+
+    elif(message.photo != '' or message.photo != None):
+        await load_photo(message, post_id)
+        await message.answer(
+            text = f'Фото успешно изменено.',
+        )
+        await print_message_to_alt_by_id(message, post_id)
+        await state.set_state(St.AltMain)
+    else:
+        await message.answer('Не нашли фото или документа')
 
 @router.message(StateFilter(St.AltGeo))
 async def alt_geo(message: types.Message, state: FSMContext):
