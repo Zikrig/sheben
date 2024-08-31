@@ -110,12 +110,14 @@ async def alt_name(message: types.Message, state: FSMContext):
     # await altpost(message, state)
     data = await state.get_data()
     post_id = str(data['post_id'])
-    new_descr = message.text
-    if len(new_descr) > 50:
+    new_name = message.text
+    if len(new_name) > 50:
         await message.answer('Имя слишком длинное! Оно не может быть больше 50 знаков')
     else:
+        # print(new_name)
         name_to_change = tb.posts_by_ids[post_id]['name']
-        tb.set_name(name_to_change, new_descr.replace('\'', '"'))
+        # print(name_to_change)
+        tb.set_name(name_to_change, new_name.replace('\'', '"'))
         await message.answer('Успешно поменяли имя')
         # print(*tb.posts.keys())
         await print_message_to_alt_by_id(message, post_id)

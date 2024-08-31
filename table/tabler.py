@@ -163,8 +163,8 @@ class Tabler:
         alt_descr_by_post(self.mysqldata, id, descr)
         self.init_table_post()
 
-    def set_name(self, id, newname):
-        alt_name_by_post(self.mysqldata, id, newname)
+    def set_name(self, name, newname):
+        alt_name_by_post(self.mysqldata, name, newname)
         self.init_table_post()
 
     def del_post_by_id(self, id):
