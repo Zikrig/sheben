@@ -9,13 +9,13 @@ class Tabler:
         self.mysqldata = mysqldata
 
     def try_parse_coords(self, coords):
-        coords.replace('\n', ' ').replace(',', '.')
+        coords = coords.replace('\n', ' ').replace(',', '.')
         geo = coords.split(' ')
         try:
             g1 = float(geo[0])
             g2 = float(geo[1])
         except:
-            return False
+            return (-1, -1)
         finally:
             return (g1, g2)
         
@@ -50,7 +50,7 @@ class Tabler:
                 
             if geo != '':
                 geonew = self.try_parse_coords(geo)
-                if geonew:
+                if geonew[0] != -1:
                     p_to_add['geo'] = geonew
             
             # if name in keyb:
