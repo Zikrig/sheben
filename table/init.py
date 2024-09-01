@@ -11,14 +11,14 @@ def alt_image_by_post(mysqldata, id, image):
     return send_some(mysqldata, f"UPDATE Posts set Image = '{image}' WHERE (Id) = ({id})")
 
 def alt_geo_by_post(mysqldata, id, geo):
-    return send_some(mysqldata, f"UPDATE Posts set Geo = '{geo}' WHERE (Id) = ({id})")
+    return send_some(mysqldata, f"UPDATE Posts set Geo = '{geo}' WHERE Id = {id}")
 
 def alt_descr_by_post(mysqldata, id, descr):
     return send_some(mysqldata, f"UPDATE Posts set TextOf = '{descr}' WHERE (Id) = ({id})")
 
 def alt_name_by_post(mysqldata, name, newname):
     send_some(mysqldata, f"UPDATE Posts set Name = '{newname}' WHERE Name = '{name}'")
-    send_some(mysqldata, f"UPDATE Posts set Father = '{newname}' WHERE Name = '{name}'")
+    send_some(mysqldata, f"UPDATE Posts set Father = '{newname}' WHERE Father = '{name}'")
 
 def get_all_posts(mysqldata):
     return select_all(mysqldata, "SELECT * FROM Posts")

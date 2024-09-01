@@ -150,8 +150,9 @@ class Tabler:
             self.init_table_post()
 
     def set_geo(self, id, geo):
-        if not 'geo' in self.posts_by_ids[str(id)]:
-            return True
+        # print('Устанавливаем гео ' + geo)
+        # if not 'geo' in self.posts_by_ids[str(id)]:
+        #     return True
         alt_geo_by_post(self.mysqldata, id, geo)
         self.init_table_post()
     
@@ -166,6 +167,8 @@ class Tabler:
     def set_name(self, name, newname):
         alt_name_by_post(self.mysqldata, name, newname)
         self.init_table_post()
+        # print(self.posts)
+        # print(self.posts_by_ids)
 
     def del_post_by_id(self, id):
         id = str(id)

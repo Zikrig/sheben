@@ -62,8 +62,14 @@ async def altpost(message: types.Message, state: FSMContext):
             text = 'Введите новое имя для этого поста',
             reply_markup=make_row_keyboard(['❌'])
         )
+    elif to_change == 'Новый подпост':
+        await state.set_state(St.NewPost)
+        await message.answer(
+            text = 'Как будет называться новый пост',
+            reply_markup=make_row_keyboard(['❌'])
+        )
 
-@router.message(StateFilter(St.AltPhoto, St.AltDescribe, St.AltGeo, St.AltName), F.text == '❌')
+@router.message(StateFilter(St.AltPhoto, St.AltDescribe, St.AltGeo, St.AltName, St.NewPost), F.text == '❌')
 async def downtomenu(message: types.Message, state: FSMContext):
     # await altpost(message, state)
     data = await state.get_data()
@@ -113,6 +119,8 @@ async def alt_name(message: types.Message, state: FSMContext):
     new_name = message.text
     if len(new_name) > 50:
         await message.answer('Имя слишком длинное! Оно не может быть больше 50 знаков')
+    elif checkname(new_name):
+        await message.answer('Это название использовать нельзя')
     else:
         # print(new_name)
         name_to_change = tb.posts_by_ids[post_id]['name']
@@ -122,6 +130,30 @@ async def alt_name(message: types.Message, state: FSMContext):
         # print(*tb.posts.keys())
         await print_message_to_alt_by_id(message, post_id)
         await state.set_state(St.AltMain)
+
+@router.message(StateFilter(St.NewPost))
+async def new_post(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    post_id = str(data['post_id'])
+    name = message.text
+    father = tb.get_post_by_id(post_id)
+    
+    if len(name) > 50:
+        await message.answer('Имя слишком длинное! Оно не может быть больше 50 знаков')
+    elif checkname(name):
+        await message.answer('Это название использовать нельзя')
+    else:
+        # print(name)
+        # print(name_to_change)
+        tb.add_post_hard(name, father['name'], f"Описание {name}")
+        await message.answer('Успешно создали пост')
+        # print(*tb.posts.keys())
+        await print_message(message, post_id, True)
+        await state.set_state(None)
+
+def checkname(name) -> bool:
+    checklist = ['Переименовать', '❌', 'Удалить', 'Удалить пост', '✏Локация', '✏Описание', '✏Фото/файл']
+    return name in checklist
 
 @router.message(StateFilter(St.AltPhoto))
 async def alt_photo(message: types.Message, state: FSMContext):

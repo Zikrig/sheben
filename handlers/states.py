@@ -9,3 +9,4 @@ class St(StatesGroup):
     AltPhoto = State()
     AltGeo = State()
     AltName = State()
+    NewPost = State()

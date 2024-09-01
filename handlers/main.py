@@ -20,8 +20,10 @@ async def process_start(message: types.Message):
     await print_message(message, '❌', id in admins)
 
 
-@router.message(F.text.in_(tb.posts), StateFilter(None))
+@router.message(F.text.not_contains('/'), StateFilter(None))
 async def showpost(message: types.Message):
+    if not message.text in tb.posts:
+        return True
     id = str(message.from_user.id)
     await print_message(message, message.text, id in admins)
 
@@ -36,3 +38,11 @@ async def go_to_alt(message: types.Message, state: FSMContext):
     if exist_post:
         await state.set_state(St.AltMain)
         await state.update_data(post_id=id)
+
+# @router.message(F.text.not_contains(tb.posts.keys()))
+# async def nothere(message: types.Message):
+#     # id = str(message.from_user.id)
+#     if message.text in tb.posts.keys():
+#         await message.answer('Так вот же он')
+#     else:
+#         await message.answer(f'Нет ключа {message.text} в posts, только ' + ', '.join(tb.posts.keys()))

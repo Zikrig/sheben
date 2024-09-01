@@ -38,9 +38,9 @@ async def print_message_to_alt_by_id(message: types.Message, id: str):
     
     # keyb = make_row_keyboard(post['keyboard']) if 'keyboard' in post else None
     if post['typeof'] =='hard':
-        keyb = make_row_keyboard(['✏Описание', '✏Фото/файл', '✏Локация', 'Удалить пост', '❌'])
+        keyb = make_row_keyboard(['✏Описание', '✏Фото/файл', '✏Локация', 'Переименовать', 'Новый подпост', 'Удалить пост', '❌'])
     else:
-        keyb = make_row_keyboard(['✏Описание', 'Удалить пост', '❌'])
+        keyb = make_row_keyboard(['✏Описание', 'Переименовать', 'Новый подпост', 'Удалить пост', '❌'])
     
     # print(post)
     await answer_by_something(message, post, keyb)
