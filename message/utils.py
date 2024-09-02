@@ -95,3 +95,8 @@ async def answer_by_something(message: types.message, post, keyb, admin=False):
             latitude=post['geo'][0],
             longitude=post['geo'][1]
         )
+
+async def imrobot(message: types.Message):
+    await message.answer(
+        text='Извините, но вы переписываетесь с роботом.\nВ нем можно посмотреть наши документы, цены и точку загрузки, но он не отвечает на сообщения, как человек.\nПожалуйста, пользуйтесь кнопками.'
+        )

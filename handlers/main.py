@@ -11,6 +11,7 @@ from bot_create import tb
 from config_base import admins
 
 from message.utils import *
+from aiogram.types import ContentType
 
 router = Router()
 
@@ -19,11 +20,17 @@ async def process_start(message: types.Message):
     id = str(message.from_user.id)
     await print_message(message, '❌', id in admins)
 
-
+@router.message(F.text == None)
 @router.message(F.text.not_contains('/'), StateFilter(None))
 async def showpost(message: types.Message):
-    if not message.text in tb.posts:
+    if message.voice:
+        await imrobot(message)
         return True
+    
+    if not message.text in tb.posts:
+        await imrobot(message)
+        return True
+    
     id = str(message.from_user.id)
     await print_message(message, message.text, id in admins)
 
