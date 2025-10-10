@@ -1,14 +1,15 @@
-from mysql.connector import connect, Error
+import psycopg2
+from psycopg2 import Error
 
 def select_one(my, zap):
     try:
-        conn = connect(
+        conn = psycopg2.connect(
             user=my['user'], 
             password=my['password'],
             host=my['host'],
             database=my['database']
         )
-        cursor = conn.cursor(buffered=True)
+        cursor = conn.cursor()
         cursor.execute(zap)
         conn.commit()  
         res = cursor.fetchone()
@@ -29,13 +30,13 @@ def select_one(my, zap):
 
 def select_all(my, zap, rasp=False):
     try:
-        conn = connect(
+        conn = psycopg2.connect(
             user=my['user'], 
             password=my['password'],
             host=my['host'],
             database=my['database']
         )
-        cursor = conn.cursor(buffered=True)
+        cursor = conn.cursor()
         cursor.execute(zap)
         conn.commit()  
 
@@ -56,17 +57,17 @@ def select_all(my, zap, rasp=False):
 
 def send_some(my, zap, ret=False):
     try:
-        conn = connect(
+        conn = psycopg2.connect(
             user=my['user'], 
             password=my['password'],
             host=my['host'],
             database=my['database']
             )
-        cursor = conn.cursor(buffered=True)
+        cursor = conn.cursor()
         cursor.execute(zap)
         conn.commit()
         if ret:
-            res = cursor.lastrowid
+            res = cursor.fetchone()[0] if cursor.rowcount > 0 else None
         else:
             res = -2
     except (Exception, Error) as error:

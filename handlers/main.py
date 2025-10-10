@@ -18,13 +18,20 @@ router = Router()
 @router.message(F.text == '/start')
 async def process_start(message: types.Message):
     id = str(message.from_user.id)
-    await print_message(message, '❌', id in admins)
+    # Показываем главное меню напрямую, без кнопки
+    await print_message(message, '🏠 Главное меню', id in admins)
 
 @router.message(F.text == None)
 @router.message(F.text.not_contains('/'), StateFilter(None))
 async def showpost(message: types.Message):
     if message.voice:
         await imrobot(message)
+        return True
+    
+    # Специальная обработка кнопки "Назад"
+    if message.text == '❌':
+        id = str(message.from_user.id)
+        await print_message(message, '🏠 Главное меню', id in admins)
         return True
     
     if not message.text in tb.posts:

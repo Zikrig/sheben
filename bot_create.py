@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 
 from table.tabler import Tabler
+from table.init import init_posts, init_default_posts
 from config_base import mysqldata, picdir
 
 
@@ -15,6 +16,13 @@ load_dotenv()
 
 bot = Bot(token=os.getenv("TOKEN"))
 dp = Dispatcher()
+
+# Инициализация базы данных
+print("Инициализация базы данных...")
+init_posts(mysqldata)  # Создаем таблицу если не существует
+init_default_posts(mysqldata)  # Добавляем базовые посты
+
+# Инициализация Tabler
 tb = Tabler(mysqldata)
 tb.init_table_post()
 

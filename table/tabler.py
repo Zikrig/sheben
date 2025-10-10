@@ -5,8 +5,8 @@ from os import remove, path
 
     
 class Tabler:
-    def __init__(self, mysqldata):
-        self.mysqldata = mysqldata
+    def __init__(self, sql_config):
+        self.sql_config = sql_config
 
     def try_parse_coords(self, coords):
         coords = coords.replace('\n', ' ').replace(',', '.')
@@ -20,14 +20,14 @@ class Tabler:
             return (g1, g2)
         
     def renew_base(self):
-        del_posts(self.mysqldata)
-        init_posts(self.mysqldata)
+        del_posts(self.sql_config)
+        init_posts(self.sql_config)
         
     def create_base(self):
-        init_posts(self.mysqldata)
+        init_posts(self.sql_config)
         
     def init_table_post(self):
-        posts_raw = get_all_posts(self.mysqldata)
+        posts_raw = get_all_posts(self.sql_config)
 
         self.posts = {}
         self.posts_by_ids = {}
@@ -79,7 +79,7 @@ class Tabler:
                 # print(f'НЕТУ{father}')
 
         for keyb_item in self.keyb:
-            if keyb_item != '❌':
+            if keyb_item != '❌' and keyb_item != '🏠 Главное меню':
                 self.keyb[keyb_item].append('❌')
                 
         for post in self.posts:
@@ -120,19 +120,19 @@ class Tabler:
         return self.posts_by_ids[id]
     
     def add_post_simple(self, name, father, textof):
-        create_post(self.mysqldata, name, father, textof, 'simple')
+        create_post(self.sql_config, name, father, textof, 'simple')
         self.init_table_post()
 
     def add_post_hard(self, name, father, textof):
-        create_post(self.mysqldata, name, father, textof, 'hard')
+        create_post(self.sql_config, name, father, textof, 'hard')
         self.init_table_post()
 
     def add_post_menu(self, name, father, textof):
-        create_post(self.mysqldata, name, father, textof, 'menu')
+        create_post(self.sql_config, name, father, textof, 'menu')
         self.init_table_post()
 
     def set_image(self, id, imagepath):
-        alt_image_by_post(self.mysqldata, id, imagepath)
+        alt_image_by_post(self.sql_config, id, imagepath)
         self.init_table_post()
     
     def del_image(self, id):
@@ -146,26 +146,26 @@ class Tabler:
         except Exception as e:
             print('Ошибка ' + str(e))
         finally:
-            alt_image_by_post(self.mysqldata, id, '')
+            alt_image_by_post(self.sql_config, id, '')
             self.init_table_post()
 
     def set_geo(self, id, geo):
         # print('Устанавливаем гео ' + geo)
         # if not 'geo' in self.posts_by_ids[str(id)]:
         #     return True
-        alt_geo_by_post(self.mysqldata, id, geo)
+        alt_geo_by_post(self.sql_config, id, geo)
         self.init_table_post()
     
     def del_geo(self, id):
-        alt_geo_by_post(self.mysqldata, id, '')
+        alt_geo_by_post(self.sql_config, id, '')
         self.init_table_post()
 
     def set_descr(self, id, descr):
-        alt_descr_by_post(self.mysqldata, id, descr)
+        alt_descr_by_post(self.sql_config, id, descr)
         self.init_table_post()
 
     def set_name(self, name, newname):
-        alt_name_by_post(self.mysqldata, name, newname)
+        alt_name_by_post(self.sql_config, name, newname)
         self.init_table_post()
         # print(self.posts)
         # print(self.posts_by_ids)
@@ -184,7 +184,7 @@ class Tabler:
         
         self.del_geo(id)
         self.del_image(id)
-        del_post_by(self.mysqldata, 'id', id)
+        del_post_by(self.sql_config, 'id', id)
         self.init_table_post()
 
     def del_post_by_name(self, name):

@@ -1,4 +1,4 @@
 aiogram==3.8
 asyncio
-mysql-connector-python
+psycopg2-binary
 python-dotenv
